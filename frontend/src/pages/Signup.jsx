@@ -12,7 +12,7 @@ function Signup() {
     setError("");
 
     try {
-      const res = await fetch("/signup", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -32,7 +32,7 @@ function Signup() {
   };
 
   return (
-    <div>
+    <div className="page">
       <h2>Sign Up</h2>
       <form onSubmit={handleSubmit}>
         <input

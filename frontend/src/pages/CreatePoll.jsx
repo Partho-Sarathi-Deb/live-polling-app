@@ -54,7 +54,7 @@ function CreatePoll() {
   };
 
   return (
-    <div>
+    <div className="page">
       <h2>Create Poll</h2>
       <form onSubmit={handleSubmit}>
         <input
