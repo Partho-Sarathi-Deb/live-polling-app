@@ -12,7 +12,7 @@ function Signup() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:8080/signup", {
+      const res = await fetch("/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -49,7 +49,7 @@ function Signup() {
         />
         <button type="submit">Sign Up</button>
       </form>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="error">{error}</p>}
       <p>
         Already have an account? <Link to="/login">Login</Link>
       </p>

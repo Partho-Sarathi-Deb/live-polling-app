@@ -12,7 +12,7 @@ function Login() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:8080/login", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -33,7 +33,7 @@ function Login() {
   };
 
   return (
-    <div>
+    <div className="page">
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
         <input
@@ -50,7 +50,7 @@ function Login() {
         />
         <button type="submit">Login</button>
       </form>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="error">{error}</p>}
     <p>
         No account? <Link to="/signup">Sign up</Link>
     </p>

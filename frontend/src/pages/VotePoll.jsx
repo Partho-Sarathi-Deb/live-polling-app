@@ -16,7 +16,7 @@ function VotePoll() {
   }, [id]);
 
   useEffect(() => {
-    const ws = new WebSocket(`ws://localhost:8080/ws/polls/${id}`);
+    const ws = new WebSocket(`${import.meta.env.VITE_WS_URL}/ws/polls/${id}`);
     ws.onmessage = (event) => {
       setCounts(JSON.parse(event.data));
     };
@@ -25,7 +25,7 @@ function VotePoll() {
 
   const handleVote = async (optionIndex) => {
     try {
-      const res = await fetch(`http://localhost:8080/polls/${id}/vote`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/polls/${id}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ optionIndex }),
@@ -52,7 +52,7 @@ function VotePoll() {
             {opt}
           </button>
         ))}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="error">{error}</p>}
       <h3>Live Results</h3>
       <ul className="results-list">
         {poll.options.map((opt, i) => (
