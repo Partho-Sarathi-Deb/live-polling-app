@@ -95,5 +95,9 @@ func main() {
 	r.GET("/polls/:id", getPollHandler)
 	r.POST("/polls/:id/vote", voteHandler)
 	r.GET("/ws/polls/:id", pollWebSocketHandler)
-	r.Run(":8080")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	r.Run(":" + port)
 }
