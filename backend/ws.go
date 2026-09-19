@@ -22,20 +22,37 @@ func pollWebSocketHandler(c *gin.Context) {
 	}
 	defer conn.Close()
 
-	ctx := c.Request.Context()
 	channel := "poll:" + pollID + ":updates"
-	sub := redisClient.Subscribe(ctx, channel)
+	sub := redisClient.Subscribe(c.Request.Context(), channel)
 	defer sub.Close()
 
 	ch := sub.Channel()
 
+	// detect disconnects: gorilla requires an active reader to notice a closed connection
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		for {
+			if _, _, err := conn.ReadMessage(); err != nil {
+				return // client disconnected or errored
+			}
+		}
+	}()
+
 	log.Println("Subscribed to", channel)
-	for msg := range ch {
-		log.Println("Received on", channel, ":", msg.Payload)
-		if err := conn.WriteMessage(websocket.TextMessage, []byte(msg.Payload)); err != nil {
-			log.Println("WebSocket write failed, closing:", err)
+	for {
+		select {
+		case msg, ok := <-ch:
+			if !ok {
+				return
+			}
+			if err := conn.WriteMessage(websocket.TextMessage, []byte(msg.Payload)); err != nil {
+				log.Println("WebSocket write failed, closing:", err)
+				return
+			}
+		case <-done:
+			log.Println("Client disconnected, closing subscription for", channel)
 			return
 		}
 	}
-	log.Println("Subscription loop ended for", channel)
 }
