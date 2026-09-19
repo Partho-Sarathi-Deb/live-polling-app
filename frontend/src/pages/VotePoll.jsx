@@ -9,7 +9,7 @@ function VotePoll() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch(`http://localhost:8080/polls/${id}`)
+    fetch(`${import.meta.env.VITE_API_URL}/polls/${id}`)
       .then((res) => res.json())
       .then((data) => setPoll(data))
       .catch(() => setError("Could not load poll"));
@@ -25,7 +25,7 @@ function VotePoll() {
 
   const handleVote = async (optionIndex) => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/polls/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/polls/${id}/vote`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ optionIndex }),
