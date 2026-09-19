@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -66,9 +67,16 @@ func voteHandler(c *gin.Context) {
 
 	// fetch full current counts and publish them so all connected clients update
 	counts, err := redisClient.HGetAll(ctx, countKey).Result()
-	if err == nil {
+	if err != nil {
+		log.Println("HGetAll failed:", err)
+	} else {
 		payload, _ := json.Marshal(counts)
-		redisClient.Publish(ctx, "poll:"+pollID+":updates", payload)
+		n, pubErr := redisClient.Publish(ctx, "poll:"+pollID+":updates", payload).Result()
+		if pubErr != nil {
+			log.Println("Publish failed:", pubErr)
+		} else {
+			log.Println("Published to", n, "subscribers")
+		}
 	}
 
 	c.JSON(http.StatusOK, gin.H{"status": "vote recorded"})

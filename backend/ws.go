@@ -29,10 +29,13 @@ func pollWebSocketHandler(c *gin.Context) {
 
 	ch := sub.Channel()
 
+	log.Println("Subscribed to", channel)
 	for msg := range ch {
+		log.Println("Received on", channel, ":", msg.Payload)
 		if err := conn.WriteMessage(websocket.TextMessage, []byte(msg.Payload)); err != nil {
 			log.Println("WebSocket write failed, closing:", err)
 			return
 		}
 	}
+	log.Println("Subscription loop ended for", channel)
 }
